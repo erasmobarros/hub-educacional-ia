@@ -43,12 +43,14 @@ cd frontend
 # Instale as dependências e rode
 npm install
 npm run dev
-🛠️ Funcionalidades
+
+
+## 🛠️ Funcionalidades
 [x] Cadastro de Recursos: Adicione títulos, tipos e links de materiais.
 
 [x] Smart Assist (IA): Botão que preenche automaticamente a descrição e tags usando o Google Gemini.
 
 [x] Listagem: Visualização dos materiais cadastrados em tempo real.
 
-Autor
-Desenvolvido por Erasmo Estudante de Ciência da Computação - UFAPE
+## Autor
+Desenvolvido por Jose Erasmo do Nascimento Barros Filho Estudante de Ciência da Computação - UFAPE
