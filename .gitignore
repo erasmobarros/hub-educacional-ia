@@ -1,3 +1,15 @@
+# Ignorar segredos
 .env
-.venv/
+.env.txt
+
+# Ignorar pastas pesadas do Python
 __pycache__/
+*.pyc
+.venv/
+venv/
+
+# Ignorar pastas pesadas do React
+node_modules/
+dist/
+build/
+.DS_Store

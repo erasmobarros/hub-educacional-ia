@@ -2,45 +2,70 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
   Container, Typography, Box, TextField, Button, Card, CardContent, 
-  Grid, Chip, CircularProgress, IconButton, Snackbar, Alert 
+  Grid, CircularProgress, Snackbar, Alert, Dialog, DialogTitle, 
+  DialogContent, DialogActions, AppBar, Toolbar, IconButton, 
+  CardActions, Chip, Fade, Skeleton, Paper, ThemeProvider, createTheme
 } from '@mui/material';
-import { Delete as DeleteIcon, AutoAwesome as AutoAwesomeIcon } from '@mui/icons-material';
+import { 
+  AutoAwesome, School, Delete, Edit, Link as LinkIcon, 
+  PictureAsPdf, YouTube, AddCircleOutline 
+} from '@mui/icons-material';
 
 // --- CONFIGURAÇÃO ---
-// Garanta que esta porta é a mesma que aparece no terminal do Python (uvicorn)
 const API_URL = 'http://127.0.0.1:8000';
+
+// 🎨 1. TEMA PERSONALIZADO (Visual Profissional)
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#6200ea', // Roxo Tecnológico
+    },
+    secondary: {
+      main: '#00bfa5', // Verde Água para destaque
+    },
+    background: {
+      default: '#f4f6f8', // Cinza muito suave para o fundo
+      paper: '#ffffff',
+    },
+  },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    h4: { fontWeight: 700 },
+    h6: { fontWeight: 600 },
+  },
+  shape: {
+    borderRadius: 12, // Bordas mais arredondadas e modernas
+  },
+});
 
 function App() {
   const [resources, setResources] = useState([]);
+  const [loading, setLoading] = useState(true); // Estado geral de carregamento
   const [loadingAI, setLoadingAI] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    type: 'Link',
-    url: '',
-    tags: ''
-  });
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
+  const [formData, setFormData] = useState({ title: '', description: '', type: 'Link', url: '', tags: '' });
+  const [editOpen, setEditOpen] = useState(false);
+  const [editItem, setEditItem] = useState({ id: '', title: '', description: '', type: '', url: '', tags: '' });
 
-  // Carregar recursos ao iniciar
   useEffect(() => {
     fetchResources();
   }, []);
 
   const fetchResources = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(`${API_URL}/resources/`);
       setResources(response.data);
     } catch (error) {
-      console.error("Erro ao buscar recursos:", error);
-      // Se der erro, tenta sem o prefixo /api/v1 (caso você não tenha configurado no main.py)
-      if (API_URL.includes('/api/v1')) {
-          try {
-              const retryResponse = await axios.get('http://127.0.0.1:8000/resources/');
-              setResources(retryResponse.data);
-          } catch (e) { console.error("Tentativa sem prefixo falhou tb", e)}
-      }
+      console.error("Erro ao buscar", error);
+    } finally {
+      // Pequeno delay para mostrar o efeito bonito de esqueleto
+      setTimeout(() => setLoading(false), 800);
     }
+  };
+
+  const showNotification = (msg, sev) => {
+    setNotification({ open: true, message: msg, severity: sev });
   };
 
   const handleSmartAssist = async () => {
@@ -50,38 +75,18 @@ function App() {
     }
     setLoadingAI(true);
     try {
-      // Tenta endpoint com prefixo
-      let url = `${API_URL}/smart-assist/`;
-      // Se seu backend não tem prefixo /api/v1, usa a raiz. Ajuste se necessário.
-      
-      const response = await axios.post(url, {
+      const response = await axios.post(`${API_URL}/smart-assist/`, {
         title: formData.title,
         type: formData.type
       });
-
       setFormData(prev => ({
         ...prev,
         description: response.data.suggested_description,
         tags: response.data.suggested_tags.join(', ')
       }));
-      showNotification('IA gerou a descrição com sucesso!', 'success');
+      showNotification('IA gerou o conteúdo com sucesso!', 'success');
     } catch (error) {
-      console.error("Erro na IA:", error);
-      // Fallback para tentar sem prefixo caso dê 404
-      try {
-          const response = await axios.post('http://127.0.0.1:8000/smart-assist/', {
-            title: formData.title,
-            type: formData.type
-          });
-          setFormData(prev => ({
-            ...prev,
-            description: response.data.suggested_description,
-            tags: response.data.suggested_tags.join(', ')
-          }));
-          showNotification('IA gerou a descrição com sucesso! (Rota alternativa)', 'success');
-      } catch (e) {
-          showNotification('Erro ao conectar com a IA. O backend está rodando?', 'error');
-      }
+      showNotification('Erro na IA. Verifique sua cota ou chave.', 'error');
     } finally {
       setLoadingAI(false);
     }
@@ -91,168 +96,226 @@ function App() {
     e.preventDefault();
     try {
       await axios.post(`${API_URL}/resources/`, formData);
-      showNotification('Recurso salvo!', 'success');
-      fetchResources();
+      showNotification('Material salvo com sucesso!', 'success');
       setFormData({ title: '', description: '', type: 'Link', url: '', tags: '' });
+      fetchResources();
     } catch (error) {
-      // Fallback simples
-      try {
-          await axios.post('http://127.0.0.1:8000/resources/', formData);
-          showNotification('Recurso salvo!', 'success');
-          fetchResources();
-          setFormData({ title: '', description: '', type: 'Link', url: '', tags: '' });
-      } catch (e) {
-          showNotification('Erro ao salvar.', 'error');
-      }
+      showNotification('Erro ao salvar.', 'error');
     }
   };
 
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`${API_URL}/resources/${id}`);
-      fetchResources();
-    } catch (error) {
-       try {
-          await axios.delete(`http://127.0.0.1:8000/resources/${id}`);
-          fetchResources();
-       } catch (e) {}
+    if (confirm("Tem certeza que deseja excluir este material?")) {
+      try {
+        await axios.delete(`${API_URL}/resources/${id}`);
+        showNotification("Item excluído!", "success");
+        fetchResources();
+      } catch (error) {
+        showNotification("Erro ao excluir.", "error");
+      }
     }
   };
 
-  const showNotification = (msg, sev) => {
-    setNotification({ open: true, message: msg, severity: sev });
+  const handleOpenEdit = (resource) => {
+    setEditItem(resource);
+    setEditOpen(true);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      await axios.put(`${API_URL}/resources/${editItem.id}`, editItem);
+      showNotification("Atualizado com sucesso!", "success");
+      setEditOpen(false);
+      fetchResources();
+    } catch (error) {
+      showNotification("Erro ao atualizar.", "error");
+    }
+  };
+
+  // Ícone dinâmico baseado no tipo
+  const getIcon = (type) => {
+    if (type === 'Video') return <YouTube sx={{ color: '#f44336' }} />;
+    if (type === 'PDF') return <PictureAsPdf sx={{ color: '#ff9800' }} />;
+    return <LinkIcon sx={{ color: '#2196f3' }} />;
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: '#1565c0', textAlign: 'center', mb: 4 }}>
-        🎓 Hub Educacional Inteligente
-      </Typography>
+    <ThemeProvider theme={theme}>
+      <Box sx={{ flexGrow: 1, minHeight: '100vh', bgcolor: 'background.default' }}>
+        
+        {/* 🚀 2. NAVBAR MODERNA */}
+        <AppBar position="static" elevation={0} sx={{ bgcolor: 'primary.main', mb: 4 }}>
+          <Toolbar>
+            <School sx={{ mr: 2, fontSize: 32 }} />
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, letterSpacing: 1 }}>
+              EDU.HUB <span style={{ opacity: 0.7, fontSize: '0.8em' }}>| Painel Inteligente</span>
+            </Typography>
+            <Button color="inherit" startIcon={<AddCircleOutline />}>Novo</Button>
+          </Toolbar>
+        </AppBar>
 
-      <Card sx={{ mb: 4, p: 2, boxShadow: 3, borderRadius: 2 }}>
-        <CardContent>
-          <Box component="form" onSubmit={handleSubmit}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={8}>
-                <TextField 
-                  fullWidth label="Título do Material" variant="outlined" 
-                  value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  required
-                  placeholder="Ex: Aula de Cálculo I"
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextField 
-                  select fullWidth label="Tipo" 
-                  value={formData.type}
-                  onChange={(e) => setFormData({...formData, type: e.target.value})}
-                  SelectProps={{ native: true }}
-                >
-                  <option value="Link">Link / Artigo</option>
-                  <option value="PDF">PDF</option>
-                  <option value="Video">Vídeo</option>
-                </TextField>
-              </Grid>
+        <Container maxWidth="lg">
+          <Grid container spacing={4}>
+            
+            {/* ESQUERDA: Formulário de Cadastro */}
+            <Grid item xs={12} md={4}>
+              <Paper elevation={3} sx={{ p: 3, position: 'sticky', top: 20 }}>
+                <Typography variant="h6" gutterBottom color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <AddCircleOutline /> Novo Material
+                </Typography>
+                
+                <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+                  <TextField 
+                    label="Título do Material" variant="outlined" fullWidth required
+                    value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  />
+                  
+                  <TextField 
+                    select label="Formato" fullWidth SelectProps={{ native: true }}
+                    value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}
+                  >
+                    <option value="Link">🌐 Site / Artigo</option>
+                    <option value="PDF">📄 Documento PDF</option>
+                    <option value="Video">🎥 Vídeo / Aula</option>
+                  </TextField>
 
-              <Grid item xs={12}>
-                <Button 
-                  fullWidth
-                  variant="contained" 
-                  onClick={handleSmartAssist}
-                  disabled={loadingAI}
-                  startIcon={loadingAI ? <CircularProgress size={20} color="inherit" /> : <AutoAwesomeIcon />}
-                  sx={{ 
-                    background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)', 
-                    color: 'white',
-                    py: 1.5,
-                    fontWeight: 'bold'
-                  }}
-                >
-                  {loadingAI ? 'A IA está analisando...' : '✨ Preencher Automaticamente com IA'}
-                </Button>
-              </Grid>
+                  <Button 
+                    variant="outlined" color="secondary" onClick={handleSmartAssist} disabled={loadingAI}
+                    startIcon={loadingAI ? <CircularProgress size={20} /> : <AutoAwesome />}
+                    sx={{ borderStyle: 'dashed', borderWidth: 2 }}
+                  >
+                    {loadingAI ? 'A IA está criando...' : 'Gerar com IA'}
+                  </Button>
 
-              <Grid item xs={12}>
-                <TextField 
-                  fullWidth label="Descrição" multiline rows={3} 
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  required
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField 
-                  fullWidth label="Tags" 
-                  value={formData.tags}
-                  onChange={(e) => setFormData({...formData, tags: e.target.value})}
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                 <TextField 
-                  fullWidth label="URL" 
-                  value={formData.url}
-                  onChange={(e) => setFormData({...formData, url: e.target.value})}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Button type="submit" variant="outlined" size="large" fullWidth sx={{ mt: 1 }}>
-                  Salvar no Banco de Dados
-                </Button>
+                  <TextField 
+                    label="Descrição Inteligente" multiline rows={3} fullWidth
+                    value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                  
+                  <TextField 
+                    label="URL de Acesso" fullWidth required placeholder="https://..."
+                    value={formData.url} onChange={(e) => setFormData({...formData, url: e.target.value})}
+                  />
+
+                  <TextField 
+                    label="Tags (separadas por vírgula)" fullWidth size="small"
+                    value={formData.tags} onChange={(e) => setFormData({...formData, tags: e.target.value})}
+                    InputLabelProps={{ shrink: true }}
+                  />
+
+                  <Button type="submit" variant="contained" size="large" fullWidth sx={{ mt: 1, boxShadow: 2 }}>
+                    Salvar na Biblioteca
+                  </Button>
+                </Box>
+              </Paper>
+            </Grid>
+
+            {/* DIREITA: Lista de Cards */}
+            <Grid item xs={12} md={8}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h5" fontWeight="bold" color="text.secondary">
+                  📚 Minha Biblioteca
+                </Typography>
+                <Chip label={`${resources.length} itens`} color="primary" size="small" />
+              </Box>
+
+              <Grid container spacing={2}>
+                {loading ? (
+                  // 💀 3. EFEITO DE SKELETON (Carregando)
+                  Array.from(new Array(3)).map((_, index) => (
+                    <Grid item xs={12} key={index}>
+                      <Card sx={{ display: 'flex', p: 2, alignItems: 'center' }}>
+                        <Skeleton variant="rectangular" width={60} height={60} sx={{ borderRadius: 2, mr: 2 }} />
+                        <Box sx={{ width: '100%' }}>
+                          <Skeleton width="60%" height={30} />
+                          <Skeleton width="40%" height={20} />
+                        </Box>
+                      </Card>
+                    </Grid>
+                  ))
+                ) : resources.length === 0 ? (
+                  <Grid item xs={12}>
+                    <Alert severity="info" sx={{ mt: 2 }}>Nenhum material encontrado. Comece adicionando um!</Alert>
+                  </Grid>
+                ) : (
+                  resources.map((resource) => (
+                    <Grid item xs={12} key={resource.id}>
+                      <Fade in={true} timeout={500}>
+                        <Card 
+                          sx={{ 
+                            display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, 
+                            transition: '0.3s', '&:hover': { transform: 'translateY(-4px)', boxShadow: 6 } 
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: 3, bgcolor: '#f5f5f5', minWidth: 100 }}>
+                            {getIcon(resource.type)}
+                          </Box>
+                          
+                          <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                            <CardContent sx={{ flex: '1 0 auto', pb: 1 }}>
+                              <Typography component="div" variant="h6" color="primary.main">
+                                {resource.title}
+                              </Typography>
+                              <Typography variant="subtitle2" color="text.secondary" component="div" sx={{ mb: 1 }}>
+                                {resource.type}
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                                {resource.description}
+                              </Typography>
+                              
+                              <Box sx={{ mt: 1 }}>
+                                {resource.tags && resource.tags.split(',').map((tag, i) => (
+                                  <Chip key={i} label={tag.trim()} size="small" sx={{ mr: 0.5, bgcolor: '#e3f2fd', color: '#1565c0' }} />
+                                ))}
+                              </Box>
+                            </CardContent>
+                            
+                            <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2 }}>
+                              <Button size="small" startIcon={<LinkIcon />} href={resource.url} target="_blank" variant="contained" disableElevation>
+                                Acessar
+                              </Button>
+                              <IconButton size="small" color="warning" onClick={() => handleOpenEdit(resource)}>
+                                <Edit />
+                              </IconButton>
+                              <IconButton size="small" color="error" onClick={() => handleDelete(resource.id)}>
+                                <Delete />
+                              </IconButton>
+                            </CardActions>
+                          </Box>
+                        </Card>
+                      </Fade>
+                    </Grid>
+                  ))
+                )}
               </Grid>
             </Grid>
-          </Box>
-        </CardContent>
-      </Card>
 
-      <Typography variant="h5" gutterBottom sx={{ mt: 4, mb: 2, fontWeight: 'medium' }}>
-        📚 Materiais Salvos
-      </Typography>
-      
-      {resources.length === 0 && (
-        <Typography variant="body1" color="text.secondary" align="center">
-          Nenhum material cadastrado ainda. Use a IA acima para criar o primeiro!
-        </Typography>
-      )}
-
-      <Grid container spacing={2}>
-        {resources.map((res) => (
-          <Grid item xs={12} key={res.id}>
-            <Card variant="outlined" sx={{ '&:hover': { boxShadow: 2 } }}>
-              <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Box>
-                  <Typography variant="h6" color="primary">
-                    {res.title} 
-                    <Chip label={res.type} size="small" sx={{ ml: 1, backgroundColor: '#e3f2fd', color: '#1565c0' }} />
-                  </Typography>
-                  <Typography variant="body2" sx={{ my: 1 }}>{res.description}</Typography>
-                  <Box sx={{ mb: 1 }}>
-                    {res.tags && res.tags.split(',').map((tag, idx) => (
-                      <Chip key={idx} label={tag.trim()} size="small" sx={{ mr: 0.5 }} />
-                    ))}
-                  </Box>
-                  <Typography variant="caption" component="a" href={res.url} target="_blank" sx={{ textDecoration: 'none', color: 'gray' }}>
-                    🔗 {res.url}
-                  </Typography>
-                </Box>
-                <IconButton onClick={() => handleDelete(res.id)} color="error">
-                  <DeleteIcon />
-                </IconButton>
-              </CardContent>
-            </Card>
           </Grid>
-        ))}
-      </Grid>
+        </Container>
 
-      <Snackbar open={notification.open} autoHideDuration={6000} onClose={() => setNotification({...notification, open: false})}>
-        <Alert severity={notification.severity} sx={{ width: '100%' }}>
-          {notification.message}
-        </Alert>
-      </Snackbar>
-    </Container>
+        {/* DIALOG DE EDIÇÃO (Mantido igual, só visualmente integrado) */}
+        <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="sm" fullWidth>
+          <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>✏️ Editar Material</DialogTitle>
+          <DialogContent sx={{ mt: 2 }}>
+            <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <TextField label="Título" fullWidth value={editItem.title} onChange={(e) => setEditItem({...editItem, title: e.target.value})} />
+              <TextField label="Descrição" fullWidth multiline rows={3} value={editItem.description} onChange={(e) => setEditItem({...editItem, description: e.target.value})} />
+              <TextField label="URL" fullWidth value={editItem.url} onChange={(e) => setEditItem({...editItem, url: e.target.value})} />
+              <TextField label="Tags" fullWidth value={editItem.tags} onChange={(e) => setEditItem({...editItem, tags: e.target.value})} />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setEditOpen(false)}>Cancelar</Button>
+            <Button onClick={handleSaveEdit} variant="contained" color="primary">Salvar Alterações</Button>
+          </DialogActions>
+        </Dialog>
+
+        <Snackbar open={notification.open} autoHideDuration={4000} onClose={() => setNotification({...notification, open: false})}>
+          <Alert severity={notification.severity} variant="filled">{notification.message}</Alert>
+        </Snackbar>
+      </Box>
+    </ThemeProvider>
   );
 }
 

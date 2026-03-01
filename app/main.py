@@ -1,28 +1,46 @@
 import os
 import json
+import uuid
 import google.generativeai as genai
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-# 1. Carrega as variáveis de ambiente
-load_dotenv()
+# 1. Carrega o .env
+env_file = find_dotenv()
+load_dotenv(env_file)
 
 # 2. Configura a IA
 api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    print("⚠️ AVISO: A chave GEMINI_API_KEY não foi encontrada no .env!")
-else:
-    genai.configure(api_key=api_key)
 
-# --- AQUI ESTÁ A MUDANÇA MÁGICA ---
-# Usamos um modelo que apareceu na sua lista
-model = genai.GenerativeModel("gemini-flash-latest")
+# Variável global para o modelo
+model = None
+
+if not api_key:
+    print("❌ ERRO: Chave não encontrada. Verifique o arquivo .env")
+else:
+    print(f"✅ Chave carregada! Configurando modelo compatível...")
+    genai.configure(api_key=api_key)
+    
+    # 👇 AQUI ESTÁ O SEGREDO: Usando os nomes que apareceram na SUA lista
+    try:
+        # Tenta o Flash mais recente (Geralmente Gratuito e Rápido)
+        print("Tentando conectar com 'gemini-flash-latest'...")
+        model = genai.GenerativeModel("gemini-flash-latest")
+        print("✅ Conectado ao Gemini Flash Latest!")
+    except:
+        try:
+            # Se falhar, tenta o Pro mais recente
+            print("⚠️ Flash falhou. Tentando 'gemini-pro-latest'...")
+            model = genai.GenerativeModel("gemini-pro-latest")
+            print("✅ Conectado ao Gemini Pro Latest!")
+        except Exception as e:
+            print(f"❌ Nenhum modelo funcionou. Erro: {e}")
+            model = None
 
 app = FastAPI()
 
-# 3. Configura o CORS (Permite o React acessar)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -30,15 +48,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Banco de dados simulado
+# Banco de dados na memória
 db = []
 
-# Modelos de Dados
+# --- MODELOS ---
 class SmartAssistRequest(BaseModel):
     title: str
     type: str
 
 class Resource(BaseModel):
+    id: str = None 
     title: str
     description: str
     type: str
@@ -46,57 +65,53 @@ class Resource(BaseModel):
     tags: str
 
 # --- ROTAS ---
-
-@app.get("/")
-def read_root():
-    return {"message": "API Online 🚀"}
-
 @app.get("/resources/")
 def get_resources():
     return db
 
 @app.post("/resources/")
 def add_resource(resource: Resource):
-    db.append(resource.dict())
-    return {"message": "Recurso salvo com sucesso!"}
+    new_res = resource.dict()
+    new_res["id"] = str(uuid.uuid4())
+    db.append(new_res)
+    print(f"💾 Salvo: {new_res['title']}")
+    return {"message": "Salvo!", "id": new_res["id"]}
+
+@app.delete("/resources/{resource_id}")
+def delete_resource(resource_id: str):
+    global db
+    original_len = len(db)
+    db = [r for r in db if r.get("id") != resource_id]
+    if len(db) == original_len:
+        raise HTTPException(status_code=404, detail="Item não encontrado")
+    return {"message": "Excluído"}
+
+@app.put("/resources/{resource_id}")
+def update_resource(resource_id: str, resource: Resource):
+    for r in db:
+        if r.get("id") == resource_id:
+            r.update(resource.dict())
+            r["id"] = resource_id 
+            return {"message": "Atualizado!"}
+    raise HTTPException(status_code=404, detail="Item não encontrado")
 
 @app.post("/smart-assist/")
 async def smart_assist(data: SmartAssistRequest):
-    print(f"\n🤖 RECEBI UM PEDIDO: {data.title} ({data.type})")
+    if not model:
+        raise HTTPException(status_code=500, detail="IA não configurada no Backend.")
     
-    if not api_key:
-        raise HTTPException(status_code=500, detail="Chave de API não configurada.")
-
+    print(f"🤖 IA processando: {data.title}...")
+    
     try:
-        # O Prompt para a IA
-        prompt = (
-            f"Atue como um assistente pedagógico. Analise o recurso '{data.title}' do tipo '{data.type}'. "
-            f"Gere uma descrição curta e 3 tags técnicas. "
-            f"Responda APENAS um JSON válido neste formato exato, sem crase ou markdown: "
-            f'{{"suggested_description": "...", "suggested_tags": ["tag1", "tag2", "tag3"]}}'
-        )
-
-        print("⏳ Enviando para o Google Gemini (2.0 Flash)...")
+        prompt = (f"Analise o recurso educacional '{data.title}' (Tipo: {data.type}). "
+                  "Responda APENAS um JSON válido neste formato:\n"
+                  '{"suggested_description": "Descrição curta aqui", "suggested_tags": ["tag1", "tag2"]}')
+        
         response = model.generate_content(prompt)
-        print("📩 Resposta recebida da IA.")
-
-        # Limpeza da resposta
-        text_response = response.text.replace("```json", "").replace("```", "").strip()
+        text = response.text.replace("```json", "").replace("```", "").strip()
+        return json.loads(text)
         
-        # Converte para JSON
-        dados_json = json.loads(text_response)
-        
-        print(f"✅ Sucesso! Dados prontos para o site: {dados_json}")
-        return dados_json
-
     except Exception as e:
-        print(f"🔥 ERRO NA IA: {str(e)}")
-        # Se der erro, vamos tentar um modelo de backup (Flash Lite)
-        try:
-             print("🔄 Tentando modelo de backup...")
-             backup_model = genai.GenerativeModel("gemini-2.0-flash-lite")
-             response = backup_model.generate_content(prompt)
-             text_response = response.text.replace("```json", "").replace("```", "").strip()
-             return json.loads(text_response)
-        except:
-             raise HTTPException(status_code=500, detail=f"Erro na IA: {str(e)}")
+        print(f"🔥 Erro na IA: {e}")
+        # Dica: Se der erro de cota aqui, o usuário verá no console
+        raise HTTPException(status_code=500, detail=f"Erro na IA: {str(e)}")
