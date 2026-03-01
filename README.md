@@ -44,7 +44,7 @@ cd frontend
 npm install
 npm run dev
 
-
+```
 ## 🛠️ Funcionalidades
 [x] Cadastro de Recursos: Adicione títulos, tipos e links de materiais.
 
