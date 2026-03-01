@@ -1,6 +1,7 @@
+
 # 🧠 Hub Educacional Inteligente (AI-Powered)
 
-Este projeto é uma plataforma Fullstack desenvolvida para facilitar o cadastro e organização de recursos educacionais (aulas, vídeos, artigos). 
+Este projeto é uma plataforma Fullstack desenvolvida para facilitar o cadastro e organização de recursos educacionais.
 
 O diferencial do sistema é o uso da **Inteligência Artificial (Google Gemini)** para analisar o título do material e gerar automaticamente uma **descrição pedagógica** e **tags técnicas**, agilizando o trabalho de professores e curadores de conteúdo.
 
@@ -34,3 +35,20 @@ pip install fastapi uvicorn google-generativeai python-dotenv pydantic
 
 # Inicie o servidor
 python -m uvicorn app.main:app --reload
+2. Configurando o Frontend (Interface)
+Bash
+# Em um novo terminal, entre na pasta do frontend
+cd frontend
+
+# Instale as dependências e rode
+npm install
+npm run dev
+🛠️ Funcionalidades
+[x] Cadastro de Recursos: Adicione títulos, tipos e links de materiais.
+
+[x] Smart Assist (IA): Botão que preenche automaticamente a descrição e tags usando o Google Gemini.
+
+[x] Listagem: Visualização dos materiais cadastrados em tempo real.
+
+Autor
+Desenvolvido por Erasmo Estudante de Ciência da Computação - UFAPE
