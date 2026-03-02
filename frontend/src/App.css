@@ -1,0 +1,146 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f6f8;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  width: 800px;
+  margin: 40px auto;
+}
+
+h1 {
+  text-align: center;
+}
+
+.form-box {
+  background: white;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+form input,
+form select,
+form textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+button {
+  padding: 8px 12px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.save-btn {
+  background-color: #2563eb;
+  color: white;
+}
+
+.save-btn:hover {
+  background-color: #1e40af;
+}
+
+.ai-button {
+  background-color: #16a34a;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.ai-button:hover {
+  background-color: #15803d;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.actions {
+  margin-top: 10px;
+}
+
+.actions button {
+  margin-right: 5px;
+  background-color: #e5e7eb;
+}
+
+.actions button:hover {
+  background-color: #d1d5db;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 6px;
+  width: 300px;
+}
+
+.modal-actions {
+  margin-top: 10px;
+  text-align: right;
+}
+.access-btn {
+  background-color: #f59e0b;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.access-btn:hover {
+  background-color: #d97706;
+}
+.actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  font-size: 14px;
+}
+
+.link-btn:hover {
+  color: #1e40af;
+}

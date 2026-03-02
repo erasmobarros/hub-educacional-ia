@@ -53,7 +53,7 @@ async def lifespan(app: FastAPI):
     api_key = os.getenv("GEMINI_API_KEY")
 
     if not api_key:
-        logger.error("❌ GEMINI_API_KEY não encontrada no .env")
+        logger.error("GEMINI_API_KEY não encontrada no .env")
     else:
         genai.configure(api_key=api_key)
         
@@ -63,7 +63,7 @@ async def lifespan(app: FastAPI):
             try:
                 logger.info(f"Tentando carregar modelo: {model_name}...")
                 ai_model = genai.GenerativeModel(model_name)
-                logger.info(f"✅ IA Conectada: {model_name}")
+                logger.info(f"IA Conectada: {model_name}")
                 break 
             except Exception as e:
                 logger.warning(f"Falha ao carregar {model_name}: {e}")
@@ -71,7 +71,7 @@ async def lifespan(app: FastAPI):
     yield 
     
    
-    logger.info("Desligando API...")
+    logger.info("Desligando API")
 
 
 app = FastAPI(
@@ -90,7 +90,6 @@ app.add_middleware(
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
-    """Mede o tempo de cada requisição e gera logs automáticos."""
     start = time.time()
     response = await call_next(request)
     process_time = time.time() - start
@@ -108,7 +107,6 @@ async def log_requests(request: Request, call_next):
 
 @app.get("/health")
 def health_check():
-    """Verifica saúde do sistema (Requisito DevOps)."""
     uptime = round(time.time() - start_time, 2)
     return {
         "status": "healthy",
