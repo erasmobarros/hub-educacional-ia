@@ -28,19 +28,22 @@ Bash
 # Entre na pasta raiz e ative o ambiente virtual
 .venv\Scripts\activate
 
-# Instale as dependências
+1.1 Instale as dependências
 pip install fastapi uvicorn google-generativeai python-dotenv pydantic
 
-# Inicie o servidor
+1.2 Inicie o servidor
 python -m uvicorn app.main:app --reload
+
 2. Configurando o Frontend (Interface)
 Bash
-# Em um novo terminal, entre na pasta do frontend
+
+2.1 Em um novo terminal, entre na pasta do frontend
 cd frontend
 
-# Instale as dependências e rode
+2.2Instale as dependências e rode
 npm install
 npm run dev
+
 🛠️ Funcionalidades
 [x] Cadastro de Recursos: Adicione títulos, tipos e links de materiais.
 
