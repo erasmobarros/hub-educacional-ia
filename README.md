@@ -108,17 +108,6 @@ Retorna:
 
 ---
 
-### Recursos
-
-| Método | Endpoint        | Descrição               |
-| ------ | --------------- | ----------------------- |
-| GET    | /resources/     | Lista todos os recursos |
-| POST   | /resources/     | Cria novo recurso       |
-| PUT    | /resources/{id} | Atualiza recurso        |
-| DELETE | /resources/{id} | Remove recurso          |
-
----
-
 ### Smart Assist (IA)
 
 ```
