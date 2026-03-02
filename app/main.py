@@ -15,8 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv, find_dotenv
 
-# --- 1. Configuração de Logs Profissionais ---
-# Formato JSON-like ou estruturado é o padrão da indústria
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
@@ -24,16 +23,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger("api")
 
-# Carrega variáveis de ambiente
+
 load_dotenv(find_dotenv())
 
-# --- 2. Estado Global ---
-# Armazenamento em memória (simples e funcional)
 db_memory = []
 ai_model = None
 start_time = time.time()
 
-# --- 3. Modelos de Dados (Pydantic) ---
+
 class ResourceBase(BaseModel):
     title: str = Field(..., min_length=3, description="Título do material")
     type: str = Field(..., description="Tipo: PDF, Video, Link")
@@ -48,11 +45,10 @@ class AIRequest(BaseModel):
     title: str
     type: str
 
-# --- 4. Lifespan (Inicialização Moderna) ---
-# É assim que desenvolvedores Sênior iniciam recursos no FastAPI hoje em dia
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # --- STARTUP: Carrega a IA ---
+    
     global ai_model
     api_key = os.getenv("GEMINI_API_KEY")
 
@@ -60,7 +56,7 @@ async def lifespan(app: FastAPI):
         logger.error("❌ GEMINI_API_KEY não encontrada no .env")
     else:
         genai.configure(api_key=api_key)
-        # Tenta modelos em ordem de preferência (Failover)
+        
         models = ["gemini-flash-latest", "gemini-pro-latest", "gemini-1.5-flash"]
         
         for model_name in models:
@@ -68,20 +64,20 @@ async def lifespan(app: FastAPI):
                 logger.info(f"Tentando carregar modelo: {model_name}...")
                 ai_model = genai.GenerativeModel(model_name)
                 logger.info(f"✅ IA Conectada: {model_name}")
-                break # Se funcionou, para de tentar
+                break 
             except Exception as e:
                 logger.warning(f"Falha ao carregar {model_name}: {e}")
     
-    yield # A aplicação roda aqui
+    yield 
     
-    # --- SHUTDOWN: Limpeza ---
+   
     logger.info("Desligando API...")
 
-# --- 5. Inicialização do App ---
+
 app = FastAPI(
     title="EduHub API",
     version="1.0.0",
-    lifespan=lifespan # Usa o sistema moderno de startup
+    lifespan=lifespan 
 )
 
 app.add_middleware(
@@ -91,7 +87,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- 6. Middleware de Observabilidade (Logs automáticos) ---
+
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     """Mede o tempo de cada requisição e gera logs automáticos."""
@@ -99,7 +95,7 @@ async def log_requests(request: Request, call_next):
     response = await call_next(request)
     process_time = time.time() - start
     
-    # Loga apenas se não for Health Check (para não poluir)
+   
     if request.url.path != "/health":
         logger.info(
             f"Method={request.method} Path={request.url.path} "
@@ -108,7 +104,7 @@ async def log_requests(request: Request, call_next):
     
     return response
 
-# --- 7. Rotas ---
+
 
 @app.get("/health")
 def health_check():
@@ -155,13 +151,13 @@ def update_resource(resource_id: str, resource: ResourceBase):
             
     raise HTTPException(status_code=404, detail="Item não encontrado")
 
-# --- 8. Rota da IA (Smart Assist) ---
+
 @app.post("/smart-assist/")
 async def smart_assist(data: AIRequest):
     if not ai_model:
         raise HTTPException(status_code=503, detail="Serviço de IA indisponível")
 
-    # Início da medição de Observabilidade
+    
     req_start = time.time()
     
     try:
@@ -171,21 +167,21 @@ async def smart_assist(data: AIRequest):
             '{"suggested_description": "Resumo curto...", "suggested_tags": ["tag1", "tag2"]}'
         )
 
-        # Chama a IA
+        
         response = await ai_model.generate_content_async(prompt)
         
-        # Limpeza e Parse
+       
         clean_text = response.text.replace("```json", "").replace("```", "").strip()
         result = json.loads(clean_text)
 
-        # Métricas Finais
+        
         latency = round(time.time() - req_start, 2)
-        # Estimativa de tokens (caracteres / 4 é o padrão da indústria para estimar)
+        
         tokens_in = len(prompt) // 4
         tokens_out = len(clean_text) // 4
         total_tokens = tokens_in + tokens_out
 
-        # LOG ESTRUTURADO (Exatamente o requisito do professor)
+        
         logger.info(
             f"AI Request Success | Title='{data.title}' | "
             f"Latency={latency}s | Tokens={total_tokens}"
