@@ -1,33 +1,31 @@
+🧠 Hub Educacional Inteligente (AI-Powered)
+Este projeto é uma plataforma Fullstack desenvolvida para facilitar o cadastro e a organização de recursos educacionais.
 
-# 🧠 Hub Educacional Inteligente (AI-Powered)
+O diferencial do sistema é o uso da Inteligência Artificial (Google Gemini) para analisar o título do material e gerar automaticamente uma descrição pedagógica e tags técnicas, agilizando o trabalho de professores e curadores de conteúdo.
 
-Este projeto é uma plataforma Fullstack desenvolvida para facilitar o cadastro e organização de recursos educacionais.
+🚀 Tecnologias Utilizadas
+Backend (API)
+Python (Linguagem principal)
 
-O diferencial do sistema é o uso da **Inteligência Artificial (Google Gemini)** para analisar o título do material e gerar automaticamente uma **descrição pedagógica** e **tags técnicas**, agilizando o trabalho de professores e curadores de conteúdo.
+FastAPI (Framework moderno e rápido para APIs)
 
-## 🚀 Tecnologias Utilizadas
+Google Generative AI (Integração com o modelo Gemini)
 
-### Backend (API)
-- **Python** (Linguagem principal)
-- **FastAPI** (Framework moderno e rápido para APIs)
-- **Google Generative AI** (Integração com o modelo Gemini)
-- **Uvicorn** (Servidor ASGI)
+Uvicorn (Servidor ASGI)
 
-### Frontend (Interface)
-- **React.js** (Biblioteca para construção de interfaces)
-- **Vite** (Ferramenta de build rápida)
-- **Axios** (Consumo de API)
-- **CSS Modules** (Estilização)
+Frontend (Interface)
+React.js (Biblioteca para construção de interfaces)
 
----
+Vite (Ferramenta de build rápida)
 
-## ⚙️ Como Rodar o Projeto Localmente
+Axios (Consumo de API)
 
-### 1. Configurando o Backend (Servidor)
+CSS Modules (Estilização)
 
-```bash
+⚙️ Como Rodar o Projeto Localmente
+1. Configurando o Backend (Servidor)
+Bash
 # Entre na pasta raiz e ative o ambiente virtual
-# Windows:
 .venv\Scripts\activate
 
 # Instale as dependências
@@ -43,14 +41,12 @@ cd frontend
 # Instale as dependências e rode
 npm install
 npm run dev
-
-```
-## 🛠️ Funcionalidades
+🛠️ Funcionalidades
 [x] Cadastro de Recursos: Adicione títulos, tipos e links de materiais.
 
 [x] Smart Assist (IA): Botão que preenche automaticamente a descrição e tags usando o Google Gemini.
 
 [x] Listagem: Visualização dos materiais cadastrados em tempo real.
 
-## Autor
-Desenvolvido por Jose Erasmo do Nascimento Barros Filho Estudante de Ciência da Computação - UFAPE
+👤 Autor
+Jose Erasmo do Nascimento Barros Filho Estudante de Ciência da Computação na UFAPE. Desenvolvedor em formação focado em soluções que unem tecnologia e educação.
