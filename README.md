@@ -58,13 +58,17 @@ npm run dev
 🛡️ Qualidade de Código (CI/CD)
 Este projeto conta com um pipeline automatizado no GitHub Actions que executa o flake8 e black a cada push, garantindo que o código esteja sempre formatado e livre de erros de sintaxe básicos.
 
-🛠️ Funcionalidades
+---
+
+## 🛠️ Funcionalidades
 [x] Cadastro de Recursos: Interface intuitiva para inserção de links e dados.
 
 [x] Smart Assist (IA): Integração com Gemini para preenchimento inteligente.
 
 [x] Listagem em Tempo Real: Visualização dinâmica dos materiais cadastrados.
 
-👤 Autor
+--- 
+
+## 👤 Autor
 Jose Erasmo do Nascimento Barros Filho
-Estudante de Ciência da Computação na UFAPE. Desenvolvedor focado em criar soluções qu
+Estudante de Ciência da Computação na UFAPE. Desenvolvedor em formação
