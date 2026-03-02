@@ -1,150 +1,98 @@
-# 🧠 Hub Educacional Inteligente
+# 🧠 Hub Educacional Inteligente (AI-Powered)
 
-Plataforma Fullstack para organização de recursos educacionais com suporte de Inteligência Artificial para geração automática de descrições e tags.
-
----
-
-## 🚀 Sobre o Projeto
-
-O Hub Educacional Inteligente é uma aplicação web que permite o cadastro, organização e gerenciamento de materiais pedagógicos (Links, Vídeos e PDFs).
-
-O diferencial do sistema é a integração com o Google Gemini, que:
-
-- Analisa o título e tipo do material
-- Gera automaticamente uma descrição pedagógica
-- Sugere tags técnicas relevantes
-- Retorna dados estruturados em JSON
-
-Isso otimiza o fluxo de trabalho de professores, curadores de conteúdo e estudantes.
+Plataforma Fullstack para organização e catalogação inteligente de recursos educacionais, com integração a IA generativa para análise automática de conteúdo pedagógico.
 
 ---
 
-## 🏗️ Arquitetura
+## 🚀 Visão Geral
 
-O projeto segue uma arquitetura Fullstack desacoplada:
+O Hub Educacional Inteligente foi desenvolvido para otimizar o fluxo de trabalho de professores e curadores de conteúdo, permitindo:
 
-Frontend (React SPA)  
-⬇  
-Backend (FastAPI REST API)  
-⬇  
-Google Gemini (Serviço de IA)
+* Cadastro estruturado de materiais
+* Geração automática de descrição pedagógica
+* Sugestão inteligente de tags técnicas
+* Persistência de dados com banco SQLite
+* Monitoramento de saúde da aplicação
+
+O diferencial do projeto é a integração com o Google Gemini, utilizando IA para enriquecer automaticamente os recursos cadastrados.
+
+---
+
+## 🏗️ Arquitetura do Sistema
+
+Frontend (SPA) → API REST → Banco SQLite
+                        ↘ Integração com IA (Gemini)
+
+O sistema segue uma arquitetura desacoplada:
+
+* Frontend React consome a API
+* Backend FastAPI gerencia regras de negócio
+* SQLite garante persistência local
+* IA realiza análise semântica do conteúdo
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
-### 🔹 Backend (API)
-- **Python 3.12+**
-- **FastAPI**
-- **Google Generative AI (Gemini)**
-- **Pydantic**
-- **Uvicorn**
-- **Logging estruturado**
-- **Health Check endpoint**
+### 🔙 Backend
 
-### 🔹 Frontend (Interface)
-- **React.js**
-- **Vite**
-- **Axios**
-- **CSS**
+* **Python 3.12+**
+* **FastAPI**
+* **SQLite**
+* **Google Generative AI (Gemini)**
+* **Pydantic**
+* **Uvicorn**
+* **Logging estruturado**
+* **dotenv**
 
----
+### 🎨 Frontend
 
-## ⚙️ Como Rodar o Projeto
-
-### 📌 Pré-requisitos
-
-- Python 3.12+
-- Node.js 18+
+* **React.js**
+* **Vite**
+* **Axios**
+* **CSS Modules**
 
 ---
 
-### 1️⃣ Backend
+## 🤖 Integração com IA
 
-```bash
-# Entre na pasta do backend
-cd backend
+A funcionalidade **Smart Assist**:
 
-# Ative o ambiente virtual (Windows)
-.venv\Scripts\activate
+* Envia título e tipo do material para o modelo Gemini
+* Exige retorno em JSON estrito
+* Força exatamente 3 tags
+* Valida estrutura antes de retornar
+* Trata respostas mal formatadas
+* Registra logs de latência e tokens estimados
+* Evita quebra caso a IA retorne texto fora do padrão
 
-# Ou (Linux/Mac)
-source .venv/bin/activate
+Exemplo de resposta esperada:
 
-# Instale as dependências
-pip install -r requirements.txt
-
-# Inicie o servidor
-python -m uvicorn app.main:app --reload
-````
-
-A API ficará disponível em:
-
-```
-http://localhost:8000
-```
-
-⚠️ Importante:
-Crie um arquivo `.env` dentro da pasta `backend` com:
-
-```
-GEMINI_API_KEY=sua_chave_aqui
+```json
+{
+  "suggested_description": "Material introdutório sobre lógica de programação...",
+  "suggested_tags": ["programacao", "iniciantes", "algoritmos"]
+}
 ```
 
 ---
 
-### 2️⃣ Frontend
+## 🗄️ Banco de Dados
 
-```bash
-# Entre na pasta do frontend
-cd frontend
+* Banco local: SQLite
+* Arquivo gerado automaticamente: `eduhub.db`
+* Persistência garantida entre reinicializações
+* Estrutura simples e escalável
 
-# Instale as dependências
-npm install
-
-# Execute o projeto
-npm run dev
-```
-
-O frontend ficará disponível em:
+Tabela principal:
 
 ```
-http://localhost:5173
+resources
 ```
 
 ---
 
-## 🛠️ Funcionalidades
-
-* ✅ Cadastro de Recursos (CRUD completo)
-* ✅ Edição parcial de campos
-* ✅ Exclusão de materiais
-* ✅ Listagem dinâmica
-* ✅ Botão para abrir link externo
-* ✅ Smart Assist (IA)
-* ✅ Geração automática de descrição
-* ✅ Geração automática de tags
-* ✅ Endpoint de Health Check (`/health`)
-* ✅ Logs estruturados no backend
-
----
-
-## 🛡️ Qualidade de Código (CI/CD)
-
-O projeto possui pipeline automatizado com **GitHub Actions** que executa:
-
-* `flake8` (análise estática)
-* `black` (formatação automática)
-
-A cada push no repositório, garantindo:
-
-* Padronização do código
-* Redução de erros básicos
-* Melhor manutenção
-
----
-
-## 🔍 Endpoint de Monitoramento
+## 🔎 Endpoints da API
 
 ### Health Check
 
@@ -154,29 +102,113 @@ GET /health
 
 Retorna:
 
-* Status da aplicação
-* Status da conexão com a IA
-* Uptime do servidor
+* status da API
+* status da IA
+* uptime da aplicação
 
 ---
 
-## 📌 Possíveis Melhorias Futuras
+### Recursos
 
-* Persistência em banco de dados (PostgreSQL)
-* Autenticação de usuários
-* Deploy em nuvem (Render / Railway / AWS)
-* Testes automatizados
-* Cache para respostas da IA
+| Método | Endpoint        | Descrição               |
+| ------ | --------------- | ----------------------- |
+| GET    | /resources/     | Lista todos os recursos |
+| POST   | /resources/     | Cria novo recurso       |
+| PUT    | /resources/{id} | Atualiza recurso        |
+| DELETE | /resources/{id} | Remove recurso          |
 
 ---
 
-## 👤 Autor
+### Smart Assist (IA)
+
+```
+POST /smart-assist/
+```
+
+Gera descrição pedagógica e 3 tags automaticamente.
+
+---
+
+## ⚙️ Como Executar o Projeto
+
+### Pré-requisitos
+
+* Python 3.12+
+* Node.js 18+
+* Chave da API do Google Gemini
+
+---
+
+### 🔹 Backend
+
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+Crie um arquivo `.env`:
+
+```
+GEMINI_API_KEY=sua_chave_aqui
+```
+
+Inicie:
+
+```bash
+python -m uvicorn app.main:app --reload
+```
+
+API disponível em:
+
+```
+http://localhost:8000
+```
+
+---
+
+### 🔹 Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Aplicação disponível em:
+
+```
+http://localhost:5173
+```
+
+---
+
+## 📊 Observabilidade e Qualidade
+
+* Logs estruturados
+* Monitoramento de latência da IA
+* Health Check implementado
+* Tratamento robusto de erros
+* Pipeline CI com formatação automática (black + flake8)
+
+---
+
+## 🎯 Diferenciais Técnicos
+
+✔ Integração real com IA
+✔ Validação de JSON estrito
+✔ Tratamento de respostas inesperadas da IA
+✔ Persistência com SQLite
+✔ Estrutura modular
+✔ Arquitetura Fullstack desacoplada
+✔ Boas práticas de logging
+
+---
+
+## 👨‍💻 Autor
 
 **José Erasmo do Nascimento Barros Filho**
 Estudante de Ciência da Computação – UFAPE
 
-
-```
-
-
-
+---
