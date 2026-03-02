@@ -70,5 +70,4 @@ Este projeto conta com um pipeline automatizado no GitHub Actions que executa o 
 --- 
 
 ## 👤 Autor
-Jose Erasmo do Nascimento Barros Filho
-Estudante de Ciência da Computação na UFAPE. Desenvolvedor em formação
+Jose Erasmo do Nascimento Barros Filho. Estudante de Ciência da Computação na UFAPE.
