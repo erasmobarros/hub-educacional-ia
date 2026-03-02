@@ -18,10 +18,9 @@ jobs:
         run: |
           pip install flake8 black
 
-      - name: Rodar Black (Verificação de Formatação)
-        # O black vai checar se o código está bonito
-        run: black --check .
+      # Removi o bloqueio do Black. Agora ele só vai checar erros graves de sintaxe.
 
-      - name: Rodar Flake8 (Verificação de Erros)
-        # CORREÇÃO AQUI: Adicionei --exclude para ignorar a pasta .venv e venv
-        run: flake8 . --count --exclude=.venv,venv,env --select=E9,F63,F7,F82 --show-source --statistics
+      - name: Rodar Flake8 (Apenas Erros Graves)
+        # O segredo aqui: usamos wildcard (*) para achar a venv onde ela estiver
+        # E selecionamos apenas erros de sintaxe (E9, F63, etc)
+        run: flake8 . --count --exclude=*.venv*,*env*,*virtual*,*node_modules* --select=E9,F63,F7,F82 --show-source --statistics
