@@ -11,20 +11,20 @@ import {
   PictureAsPdf, YouTube, AddCircleOutline 
 } from '@mui/icons-material';
 
-// --- CONFIGURAÇÃO ---
+
 const API_URL = 'http://127.0.0.1:8000';
 
-// 🎨 1. TEMA PERSONALIZADO (Visual Profissional)
+
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#6200ea', // Roxo Tecnológico
+      main: '#6200ea', 
     },
     secondary: {
-      main: '#00bfa5', // Verde Água para destaque
+      main: '#00bfa5', 
     },
     background: {
-      default: '#f4f6f8', // Cinza muito suave para o fundo
+      default: '#f4f6f8', 
       paper: '#ffffff',
     },
   },
@@ -34,13 +34,13 @@ const theme = createTheme({
     h6: { fontWeight: 600 },
   },
   shape: {
-    borderRadius: 12, // Bordas mais arredondadas e modernas
+    borderRadius: 12, 
   },
 });
 
 function App() {
   const [resources, setResources] = useState([]);
-  const [loading, setLoading] = useState(true); // Estado geral de carregamento
+  const [loading, setLoading] = useState(true); 
   const [loadingAI, setLoadingAI] = useState(false);
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
   const [formData, setFormData] = useState({ title: '', description: '', type: 'Link', url: '', tags: '' });
@@ -59,7 +59,6 @@ function App() {
     } catch (error) {
       console.error("Erro ao buscar", error);
     } finally {
-      // Pequeno delay para mostrar o efeito bonito de esqueleto
       setTimeout(() => setLoading(false), 800);
     }
   };
@@ -86,7 +85,7 @@ function App() {
       }));
       showNotification('IA gerou o conteúdo com sucesso!', 'success');
     } catch (error) {
-      showNotification('Erro na IA. Verifique sua cota ou chave.', 'error');
+      showNotification('Erro na IA.', 'error');
     } finally {
       setLoadingAI(false);
     }
@@ -132,7 +131,7 @@ function App() {
     }
   };
 
-  // Ícone dinâmico baseado no tipo
+
   const getIcon = (type) => {
     if (type === 'Video') return <YouTube sx={{ color: '#f44336' }} />;
     if (type === 'PDF') return <PictureAsPdf sx={{ color: '#ff9800' }} />;
@@ -143,21 +142,19 @@ function App() {
     <ThemeProvider theme={theme}>
       <Box sx={{ flexGrow: 1, minHeight: '100vh', bgcolor: 'background.default' }}>
         
-        {/* 🚀 2. NAVBAR MODERNA */}
         <AppBar position="static" elevation={0} sx={{ bgcolor: 'primary.main', mb: 4 }}>
           <Toolbar>
             <School sx={{ mr: 2, fontSize: 32 }} />
             <Typography variant="h6" component="div" sx={{ flexGrow: 1, letterSpacing: 1 }}>
-              EDU.HUB <span style={{ opacity: 0.7, fontSize: '0.8em' }}>| Painel Inteligente</span>
+              Recursos Educacionais <span style={{ opacity: 0.7, fontSize: '0.8em' }}>|  Hub Inteligente</span>
             </Typography>
-            <Button color="inherit" startIcon={<AddCircleOutline />}>Novo</Button>
           </Toolbar>
         </AppBar>
 
         <Container maxWidth="lg">
           <Grid container spacing={4}>
             
-            {/* ESQUERDA: Formulário de Cadastro */}
+          
             <Grid item xs={12} md={4}>
               <Paper elevation={3} sx={{ p: 3, position: 'sticky', top: 20 }}>
                 <Typography variant="h6" gutterBottom color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -174,9 +171,9 @@ function App() {
                     select label="Formato" fullWidth SelectProps={{ native: true }}
                     value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}
                   >
-                    <option value="Link">🌐 Site / Artigo</option>
-                    <option value="PDF">📄 Documento PDF</option>
-                    <option value="Video">🎥 Vídeo / Aula</option>
+                    <option value="Link">Link/ Artigo</option>
+                    <option value="PDF">Documento PDF</option>
+                    <option value="Video">Vídeo / Aula</option>
                   </TextField>
 
                   <Button 
@@ -211,18 +208,18 @@ function App() {
               </Paper>
             </Grid>
 
-            {/* DIREITA: Lista de Cards */}
+            
             <Grid item xs={12} md={8}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h5" fontWeight="bold" color="text.secondary">
-                  📚 Minha Biblioteca
+                  📚 Biblioteca
                 </Typography>
                 <Chip label={`${resources.length} itens`} color="primary" size="small" />
               </Box>
 
               <Grid container spacing={2}>
                 {loading ? (
-                  // 💀 3. EFEITO DE SKELETON (Carregando)
+                 
                   Array.from(new Array(3)).map((_, index) => (
                     <Grid item xs={12} key={index}>
                       <Card sx={{ display: 'flex', p: 2, alignItems: 'center' }}>
@@ -293,8 +290,6 @@ function App() {
 
           </Grid>
         </Container>
-
-        {/* DIALOG DE EDIÇÃO (Mantido igual, só visualmente integrado) */}
         <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="sm" fullWidth>
           <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>✏️ Editar Material</DialogTitle>
           <DialogContent sx={{ mt: 2 }}>
