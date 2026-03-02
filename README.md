@@ -1,4 +1,4 @@
-# 🧠 Hub Educacional Inteligente (AI-Powered)
+# 🧠 Hub Educacional Inteligente
 
 Plataforma Fullstack para organização de recursos educacionais com suporte de Inteligência Artificial para geração automática de descrições e tags.
 
