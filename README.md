@@ -1,55 +1,70 @@
-🧠 Hub Educacional Inteligente (AI-Powered)
-Este projeto é uma plataforma Fullstack desenvolvida para facilitar o cadastro e a organização de recursos educacionais.
+# 🧠 Hub Educacional Inteligente (AI-Powered)
 
-O diferencial do sistema é o uso da Inteligência Artificial (Google Gemini) para analisar o título do material e gerar automaticamente uma descrição pedagógica e tags técnicas, agilizando o trabalho de professores e curadores de conteúdo.
+Plataforma Fullstack voltada à organização de recursos educacionais, utilizando Inteligência Artificial para análise e catalogação automatizada.
 
-🚀 Tecnologias Utilizadas
-Backend (API)
-Python (Linguagem principal)
+## 🚀 Sobre o Projeto
+O sistema facilita o cadastro de materiais pedagógicos. O grande diferencial é a integração com o **Google Gemini**, que analisa o título dos materiais e gera automaticamente descrições pedagógicas e tags técnicas, otimizando o fluxo de trabalho de professores e curadores.
 
-FastAPI (Framework moderno e rápido para APIs)
+---
 
-Google Generative AI (Integração com o modelo Gemini)
+## 🛠️ Tecnologias Utilizadas
 
-Uvicorn (Servidor ASGI)
+### Backend (API)
+- **Python** (Linguagem principal)
+- **FastAPI** (Framework de alto desempenho)
+- **Google Generative AI** (IA para processamento de conteúdo)
+- **Pydantic** (Validação de dados)
+- **Uvicorn** (Servidor ASGI)
 
-Frontend (Interface)
-React.js (Biblioteca para construção de interfaces)
+### Frontend (Interface)
+- **React.js** (Single Page Application - SPA)
+- **Vite** (Build tool)
+- **Axios** (Integração com a API)
+- **CSS Modules** (Estilização modular)
 
-Vite (Ferramenta de build rápida)
+---
 
-Axios (Consumo de API)
+## ⚙️ Como Rodar o Projeto
 
-CSS Modules (Estilização)
+### Pré-requisitos
+- Python 3.12+
+- Node.js 18+
 
-⚙️ Como Rodar o Projeto Localmente
-1. Configurando o Backend (Servidor)
-Bash
-# Entre na pasta raiz e ative o ambiente virtual
+### 1. Backend
+```bash
+# Entre na pasta raiz
+cd backend
+
+# Ative o ambiente virtual
 .venv\Scripts\activate
 
-1.1 Instale as dependências
-pip install fastapi uvicorn google-generativeai python-dotenv pydantic
+# Instale as dependências
+pip install -r requirements.txt
 
-1.2 Inicie o servidor
+# Inicie o servidor (o app ficará em http://localhost:8000)
 python -m uvicorn app.main:app --reload
+Nota: Certifique-se de ter um arquivo .env com sua GEMINI_API_KEY configurada na pasta do backend.
 
-2. Configurando o Frontend (Interface)
+2. Frontend
 Bash
-
-2.1 Em um novo terminal, entre na pasta do frontend
+# Entre na pasta do frontend
 cd frontend
 
-2.2Instale as dependências e rode
+# Instale as dependências
 npm install
+
+# Inicie o modo de desenvolvimento
 npm run dev
+🛡️ Qualidade de Código (CI/CD)
+Este projeto conta com um pipeline automatizado no GitHub Actions que executa o flake8 e black a cada push, garantindo que o código esteja sempre formatado e livre de erros de sintaxe básicos.
 
 🛠️ Funcionalidades
-[x] Cadastro de Recursos: Adicione títulos, tipos e links de materiais.
+[x] Cadastro de Recursos: Interface intuitiva para inserção de links e dados.
 
-[x] Smart Assist (IA): Botão que preenche automaticamente a descrição e tags usando o Google Gemini.
+[x] Smart Assist (IA): Integração com Gemini para preenchimento inteligente.
 
-[x] Listagem: Visualização dos materiais cadastrados em tempo real.
+[x] Listagem em Tempo Real: Visualização dinâmica dos materiais cadastrados.
 
 👤 Autor
-Jose Erasmo do Nascimento Barros Filho Estudante de Ciência da Computação na UFAPE. Desenvolvedor em formação focado em soluções que unem tecnologia e educação.
+Jose Erasmo do Nascimento Barros Filho
+Estudante de Ciência da Computação na UFAPE. Desenvolvedor focado em criar soluções qu
