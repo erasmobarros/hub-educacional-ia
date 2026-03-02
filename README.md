@@ -9,9 +9,9 @@ Plataforma Fullstack para organização de recursos educacionais com suporte de 
 
 ## 🚀 Sobre o Projeto
 
-O **Hub Educacional Inteligente** é uma aplicação web que permite o cadastro, organização e gerenciamento de materiais pedagógicos (Links, Vídeos e PDFs).
+O Hub Educacional Inteligente é uma aplicação web que permite o cadastro, organização e gerenciamento de materiais pedagógicos (Links, Vídeos e PDFs).
 
-O diferencial do sistema é a integração com o **Google Gemini**, que:
+O diferencial do sistema é a integração com o Google Gemini, que:
 
 - Analisa o título e tipo do material
 - Gera automaticamente uma descrição pedagógica
@@ -49,7 +49,7 @@ Google Gemini (Serviço de IA)
 - **React.js**
 - **Vite**
 - **Axios**
-- **CSS personalizado**
+- **CSS**
 
 ---
 
