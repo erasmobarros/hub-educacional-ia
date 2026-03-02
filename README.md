@@ -58,6 +58,9 @@ npm run dev
 ```
 ## 🛡️ Qualidade de Código (CI/CD)
 Este projeto conta com um pipeline automatizado no GitHub Actions que executa o flake8 e black a cada push, garantindo que o código esteja sempre formatado e livre de erros de sintaxe básicos.
+Logs Estruturados: Registrar logs importantes, especialmente na 
+interação com a IA.
+o Endpoint de Health Check (/health). 
 
 ---
 
