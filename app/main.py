@@ -60,7 +60,7 @@ Base.metadata.create_all(bind=engine)
 
 
 # =========================
-# SUA CONFIGURAÇÃO DE IA (MANTIDA)
+# SUA CONFIGURAÇÃO DE IA 
 # =========================
 
 ai_model = None
